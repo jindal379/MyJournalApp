@@ -69,17 +69,51 @@ public class JournalEntryControllerV2 {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/id/{userName}/{myID}")
-    public ResponseEntity<JournalEntity> deleteGeneralEntryByID(@PathVariable ObjectId myID, @PathVariable String userName) {
-        journalEntryService.deleteByID(myID, userName);
-       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/id/{myID}")
+    public ResponseEntity<JournalEntity> deleteGeneralEntryByID(@PathVariable ObjectId myID) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        boolean removed = journalEntryService.deleteByID(myID, userName);
+        if (removed) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
-//     @DeleteMapping("/id/{myID}")
-//    public ResponseEntity<JournalEntity> deleteGeneralEntryByID(@PathVariable ObjectId myID) {
-//        journalEntryService.deleteByID(myID);
+//    @DeleteMapping("/id/{userName}/{myID}")
+//    public ResponseEntity<JournalEntity> deleteGeneralEntryByID(@PathVariable ObjectId myID, @PathVariable String userName) {
+//        journalEntryService.deleteByID(myID, userName);
 //       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //    }
+
+    @PutMapping("/id/{myId}")
+    public ResponseEntity<?> updateJournalByID(
+            @PathVariable ObjectId myId,
+            @RequestBody JournalEntity newEntry)
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        User user = userService.findByUserName(userName);
+        List<JournalEntity> collect = user.getJournalEntities().stream().filter(x -> x.getId().equals(myId)).collect(Collectors.toList());
+
+        if (!collect.isEmpty()) {
+            Optional<JournalEntity> journalEntity = journalEntryService.findByID(myId);
+            if (journalEntity.isPresent()) {
+                JournalEntity old = journalEntity.get();
+                old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
+                old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals(("")) ? newEntry.getTitle() : old.getTitle());
+
+                journalEntryService.saveEntry(old);
+                return new ResponseEntity<>(old, HttpStatus.OK);
+                         }
+                }
+
+        return new ResponseEntity<>( HttpStatus.NOT_FOUND);
+    }
+
+
 
 
 

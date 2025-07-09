@@ -12,17 +12,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 @SpringBootApplication
 //@EnableAutoConfiguration
 //@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
-public class JournalApplication {
+public class MyJournalApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(JournalApplication.class, args);
+		SpringApplication.run(MyJournalApplication.class, args);
 	}
 
 //PlatformTransactionManager ->It provides methods for beginning, committing, and rolling back transactions.
 	//MongoDatabaseFactory ->responsible for creating connections to the MongoDB database.
 	@Bean
-	public PlatformTransactionManager falana(MongoDatabaseFactory dbFactory){
+	public PlatformTransactionManager platformTransactionManager(MongoDatabaseFactory dbFactory){
 		return new MongoTransactionManager(dbFactory);
+
 	}
 }
 
