@@ -131,6 +131,10 @@ public class JournalEntryControllerV2 {
 //    }
 
     // With HTTP code in Postman so we are using ResponseEntity Class
+
+
+
+
     @PutMapping("/id/{userName}/{myId}")
     public ResponseEntity<?> updateEntry(
             @PathVariable ObjectId myId,

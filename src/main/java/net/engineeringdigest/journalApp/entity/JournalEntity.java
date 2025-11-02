@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Document(collection = "journal_entries")
-@Data
+@Data// to create getter and setter
 @NoArgsConstructor
 public class JournalEntity {
     @Id
